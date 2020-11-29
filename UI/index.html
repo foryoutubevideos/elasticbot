@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <title>Cool Bot</title>
+        <link rel="stylesheet" href="./assets/botui.min.css" />
+        <link rel="stylesheet" href="./assets/botui-theme-default.css" />
+    </head>
+    <body>
+        <div>
+            <div id="botContainer">
+                <bot-ui></bot-ui>
+            </div>
+            <div>
+                <input
+                    id="query"
+                    placeholder="Enter here..."
+                    type="text"
+                />
+                <button onclick="queryBot()">Send</button>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/vue/latest/vue.min.js"></script>
+        <script src="./assets//botui.min.js"></script>
+        <script>
+            var bot = new BotUI('botContainer');
+
+            bot.message.add({
+                loading: true,
+                delay: 1000,
+                content: "Welcome, I'm cool bot, how can i help you?"
+            });
+
+            async function queryBot() {
+                var query = document.getElementById('query');
+
+                if (query.value) {
+                    bot.message.add({
+                        human: true,
+                        content: query.value
+                    });
+
+                    var response = await fetch('https://localhost:44316/api/bot/' + query.value);
+                    botReponse(await response.json());
+                    query.value = '';
+                }
+            }
+
+            function botReponse(val) {
+                if (val && val.length > 0){
+                    bot.message.add({
+                        loading: 1000,
+                        delay: true,
+                        content: val[0].answer
+                    });
+                }
+            }
+        </script>
+    </body>
+</html>
